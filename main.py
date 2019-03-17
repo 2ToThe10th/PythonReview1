@@ -6,7 +6,7 @@ import string
 
 arguments = parser.parse()
 
-if arguments['type'] in ['encode', 'decode'] and arguments['cipher'] in ['caesar', 'vigenere']:
+if arguments['type'] in ('encode', 'decode') and arguments['cipher'] in ('caesar', 'vigenere'):
     if arguments['input_file'] is None:
         input_file = sys.stdin
         print('Input from stdin.\nTo exit programme type "exit"')
@@ -62,7 +62,7 @@ if arguments['type'] in ['encode', 'decode'] and arguments['cipher'] in ['caesar
     input_file.close()
     output_file.close()
 
-if arguments['cipher'] == 'vernam':
+if arguments['type'] in ('encode', 'decode') and arguments['cipher'] == 'vernam':
 
     if arguments['input_file'] is None:
         input_file = sys.stdin
@@ -103,4 +103,48 @@ if arguments['cipher'] == 'vernam':
     output_file.write(''.join(out_text))
     input_file.close()
     output_file.close()
+
+
+if arguments['type'] == 'train':
+    print(arguments)
+
+    if arguments['text_file'] is None:
+        text_file = sys.stdin
+        print('Input from stdin.\nTo exit programme type "exit"')
+    else:
+        try:
+            text_file = open(arguments['text_file'], 'r')
+        except:
+            raise ValueError('Problems with text_file')
+
+    lowercase_letter = string.ascii_lowercase
+    uppercase_letter = string.ascii_uppercase
+
+    model = {i: 0 for i in lowercase_letter}
+
+    for line in text_file:
+        if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
+            break
+        for i in line:
+            if i in lowercase_letter:
+                model[i] += 1
+            elif i in uppercase_letter:
+                model[lowercase_letter[uppercase_letter.find(i)]] += 1
+
+    text_file.close()
+
+    try:
+        model_file = open(arguments['model_file'], 'w')
+    except:
+        raise ValueError('Problems with model_file')
+
+    print(model)
+
+    for i in lowercase_letter:
+        if i != 'z':
+            model_file.write(str(model[i]) + ',')
+        else:
+            model_file.write(str(model[i]) + '\n')
+
+    model_file.close()
 
