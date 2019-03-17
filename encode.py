@@ -30,3 +30,4 @@ def encode_vigenere(text, key):
         j += 1
 
     return ''.join(encoded_text)
+
