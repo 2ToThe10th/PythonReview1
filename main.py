@@ -91,12 +91,12 @@ if arguments['cipher'] == 'vernam':
 
     for line in input_file:
         for i in line:
-            if code_index >= len(key):
-                raise ValueError('Too small key')
 
             if i not in code_string:
                 out_text.append(i)
             else:
+                if code_index >= len(key):
+                    raise ValueError('Too small key')
                 out_text.append(code_string[(code_string.find(i) ^ code_string.find(key[code_index]))])
                 code_index += 1
 
