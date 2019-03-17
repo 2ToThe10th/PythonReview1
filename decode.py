@@ -1,7 +1,7 @@
 import string
 
 def decode_caesar(text, key):
-    return decode_vigenere(text, string.ascii_uppercase[key])
+    return decode_vigenere(text, string.ascii_lowercase[key])
 
 
 def decode_vigenere(text, key):
