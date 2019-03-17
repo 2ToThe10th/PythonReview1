@@ -1,8 +1,8 @@
-def Parse():
+import sys
+import argparse
 
-    import sys
-    import argparse
 
+def parse():
     parser = argparse.ArgumentParser(description="encoder")
     parser.add_argument('type', action='store', type=str)
 
