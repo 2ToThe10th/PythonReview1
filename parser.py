@@ -33,5 +33,5 @@ def parse():
     else:
         raise ValueError('argument "type" is required')
 
-    return parser.parse_args()
+    return vars(parser.parse_args())
 
