@@ -6,6 +6,9 @@ def parse():
     parser = argparse.ArgumentParser(description="encoder")
     parser.add_argument('type', action='store', type=str)
 
+    if len(sys.argv) == 1:
+        raise ValueError('argument "type" is required')
+
     type_of_cipher = ('caesar', 'vigenere', 'vernam')
 
     if 'encode' == sys.argv[1]:

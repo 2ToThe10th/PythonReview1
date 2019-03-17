@@ -6,7 +6,6 @@ import string
 
 arguments = parser.parse()
 
-
 if arguments['type'] in ['encode', 'decode'] and arguments['cipher'] in ['caesar', 'vigenere']:
     if arguments['input_file'] is None:
         input_file = sys.stdin
@@ -25,26 +24,38 @@ if arguments['type'] in ['encode', 'decode'] and arguments['cipher'] in ['caesar
         except:
             raise ValueError('Problems with output_file')
 
-    x = 0
-
-    lowercase_letters = string.ascii_lowercase
-
     if arguments['cipher'] == 'vigenere':
         key = arguments['key'].lower()
-        if ''.join(sorted(key)) != lowercase_letters:
-            raise ValueError('Bad key')
+
+        for i in key:
+            if i not in string.ascii_lowercase:
+                raise ValueError('Bad key');
+
+        encode_fun = encode.encode_vigenere
+        decode_fun = decode.decode_vigenere
     else:
-        key = lowercase_letters[int(arguments['key']):] + lowercase_letters[:int(arguments['key'])]
+
+        try:
+            key = int(arguments['key'])
+        except:
+            raise ValueError('Bad key');
+
+        if key < 0 or key >= len(string.ascii_lowercase):
+            raise ValueError('Bad key');
+
+        encode_fun = encode.encode_caesar
+        decode_fun = decode.decode_caesar
+
 
     if arguments['type'] == 'encode':
         for line in input_file:
             if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
                 break
-            output_file.write(encode.encode_ces_vig(line, key))
+            output_file.write(encode_fun(line, key))
             output_file.flush()
     else:
         for line in input_file:
             if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
                 break
-            output_file.write(decode.decode_ces_vig(line, key))
+            output_file.write(decode_fun(line, key))
             output_file.flush()
