@@ -46,17 +46,23 @@ if arguments['type'] in ('encode', 'decode') and arguments['cipher'] in ('caesar
         encode_fun = encode.encode_caesar
         decode_fun = decode.decode_caesar
 
+    key_index = 0
+
     if arguments['type'] == 'encode':
         for line in input_file:
             if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
                 break
-            output_file.write(encode_fun(line, key))
+            return_value = encode_fun(line, key, key_index)
+            output_file.write(return_value[0])
+            key_index = return_value[1]
             output_file.flush()
     else:
         for line in input_file:
             if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
                 break
-            output_file.write(decode_fun(line, key))
+            return_value = decode_fun(line, key, key_index)
+            output_file.write(return_value[0])
+            key_index = return_value[1]
             output_file.flush()
 
     input_file.close()

@@ -1,16 +1,14 @@
 import string
 
-def encode_caesar(text, key):
-    return encode_vigenere(text, string.ascii_lowercase[key])
+def encode_caesar(text, key, j):
+    return encode_vigenere(text, string.ascii_lowercase[key], j)
 
 
-def encode_vigenere(text, key):
+def encode_vigenere(text, key, j):
     lowercase_letters = string.ascii_lowercase
     uppercase_letters = string.ascii_uppercase
 
     encoded_text = []
-
-    j = 0
 
     for i in text:
         if j == len(key):
@@ -20,14 +18,14 @@ def encode_vigenere(text, key):
             encoded_text.append(
                 lowercase_letters[(lowercase_letters.find(i) + lowercase_letters.find(key[j]))
                                   % len(lowercase_letters)])
+            j += 1
         elif i in uppercase_letters:
             encoded_text.append(
                 uppercase_letters[(uppercase_letters.find(i) + lowercase_letters.find(key[j]))
                                   % len(uppercase_letters)])
+            j += 1
         else:
             encoded_text.append(i)
 
-        j += 1
-
-    return ''.join(encoded_text)
+    return tuple([''.join(encoded_text), j])
 
