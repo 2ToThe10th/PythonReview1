@@ -1,5 +1,6 @@
 import sys
 import parser
+import hack
 import encode
 import decode
 import string
@@ -116,7 +117,8 @@ def main():
                         input_file.close()
                         output_file.close()
                         raise ValueError('Too small key')
-                    out_text.append(code_string[(code_string.find(i) ^ code_string.find(key[code_index]))])
+                    out_text.append(code_string[(code_string.find(i)
+                                                 ^ code_string.find(key[code_index]))])
                     code_index += 1
 
         output_file.write(''.join(out_text))
@@ -163,7 +165,7 @@ def main():
 
         model_file.close()
 
-    if arguments['type'] == 'hack':
+    if arguments['type'] == 'hack' and arguments['cipher'] == 'vigenere':
         if arguments['input_file'] is None:
             input_file = sys.stdin
             print('Input from stdin.\nTo exit programme type "exit"')
@@ -178,9 +180,12 @@ def main():
         lowercase_letter = string.ascii_lowercase
         uppercase_letter = string.ascii_uppercase
 
+        full_input_text = []
+
         for line in input_file:
             if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
                 break
+            full_input_text.append(line)
             for i in line:
                 if i in lowercase_letter:
                     input_text.append(i)
@@ -198,10 +203,13 @@ def main():
 
         try:
             train_model = [int(i) for i in model_file.readline().split(',')]
-            if len(train_model) != len(lowercase_letter):
-                raise ValueError('Wrong model_file')
         except:
-            raise TypeError('Problems with model_file')
+            raise TypeError('Wrong model_file')
+
+        if len(train_model) != len(lowercase_letter):
+            raise ValueError('Wrong model_file')
+
+        model_file.close()
 
         match_index_in_model = 0
         count_of_letters_in_model = 0
@@ -211,6 +219,8 @@ def main():
             count_of_letters_in_model += i
 
         match_index_in_model /= max(1, count_of_letters_in_model * (count_of_letters_in_model - 1))
+
+        len_of_key = 0
 
         for len_of_key in range(1, len(input_text)):
             all_match_index = []
@@ -228,14 +238,20 @@ def main():
                     match_index_in_input += max(0, i * (i - 1))
                     count_of_letters_in_input += i
 
-                match_index_in_input /= max(1, count_of_letters_in_input * (count_of_letters_in_input - 1))
+                match_index_in_input /= max(1, count_of_letters_in_input
+                                            * (count_of_letters_in_input - 1))
 
                 all_match_index.append(match_index_in_input)
 
             if all([(i > match_index_in_model*0.8) for i in all_match_index]):
                 break
 
-        print(len_of_key)
+        list_key = []
+
+        for i in range(len_of_key):
+            list_key.append(lowercase_letter[hack.hack_caesar(string_input_text[i::len_of_key], train_model)])
+
+        key = ''.join(list_key)
 
         if arguments['output_file'] is None:
             output_file = sys.stdout
@@ -244,6 +260,83 @@ def main():
                 output_file = open(arguments['output_file'], 'w')
             except:
                 raise ValueError('Problems with output_file')
+
+        key_index = 0
+
+        for line in full_input_text:
+            return_value = decode.decode_vigenere(line, key, key_index)
+            output_file.write(return_value[0])
+            key_index = return_value[1]
+            output_file.flush()
+
+        output_file.close()
+
+    if arguments['type'] == 'hack' and arguments['cipher'] == 'caesar':
+        if arguments['input_file'] is None:
+            input_file = sys.stdin
+            print('Input from stdin.\nTo exit programme type "exit"')
+        else:
+            try:
+                input_file = open(arguments['input_file'], 'r')
+            except:
+                raise ValueError('Problems with input_file')
+
+        input_text = []
+
+        lowercase_letter = string.ascii_lowercase
+        uppercase_letter = string.ascii_uppercase
+
+        full_input_text = []
+
+        for line in input_file:
+            if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
+                break
+            full_input_text.append(line)
+            for i in line:
+                if i in lowercase_letter:
+                    input_text.append(i)
+                elif i in uppercase_letter:
+                    input_text.append(lowercase_letter[uppercase_letter.find(i)])
+
+        input_file.close()
+
+        string_input_text = ''.join(input_text)
+
+
+        try:
+            model_file = open(arguments['model_file'], 'r')
+        except:
+            raise ValueError('Problems with model_file')
+
+        try:
+            train_model = [int(i) for i in model_file.readline().split(',')]
+        except:
+            raise TypeError('Wrong model_file')
+
+        if len(train_model) != len(lowercase_letter):
+            raise ValueError('Wrong model_file')
+
+        model_file.close()
+
+        key = hack.hack_caesar(string_input_text, train_model)
+
+        if arguments['output_file'] is None:
+            output_file = sys.stdout
+        else:
+            try:
+                output_file = open(arguments['output_file'], 'w')
+            except:
+                raise ValueError('Problems with output_file')
+
+        key_index = 0
+
+        for line in full_input_text:
+            return_value = decode.decode_caesar(line, key, key_index)
+            output_file.write(return_value[0])
+            key_index = return_value[1]
+            output_file.flush()
+
+        output_file.close()
 
 
 if __name__ == '__main__':

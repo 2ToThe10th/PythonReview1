@@ -1,5 +1,6 @@
 import string
 
+
 def decode_caesar(text, key, j):
     return decode_vigenere(text, string.ascii_lowercase[key], j)
 
