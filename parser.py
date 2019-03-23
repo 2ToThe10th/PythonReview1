@@ -1,5 +1,6 @@
 import sys
 import argparse
+from argparse import ArgumentParser
 
 
 def parse():
@@ -51,4 +52,3 @@ def parse():
                          "' (choose from " + str(type_of_action) + ")")
 
     return vars(parser.parse_args())
-

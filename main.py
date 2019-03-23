@@ -19,7 +19,7 @@ def main():
         else:
             try:
                 input_file = open(arguments['input_file'], 'r')
-            except:
+            except Exception:
                 raise ValueError('Problems with input_file')
 
         if arguments['output_file'] is None:
@@ -27,7 +27,7 @@ def main():
         else:
             try:
                 output_file = open(arguments['output_file'], 'w')
-            except:
+            except Exception:
                 input_file.close()
                 raise ValueError('Problems with output_file')
 
@@ -38,7 +38,7 @@ def main():
                 if i not in string.ascii_lowercase:
                     input_file.close()
                     output_file.close()
-                    raise ValueError('Bad key');
+                    raise ValueError('Bad key')
 
             encode_fun = encode.encode_vigenere
             decode_fun = decode.decode_vigenere
@@ -46,7 +46,7 @@ def main():
 
             try:
                 key = int(arguments['key'])
-            except:
+            except Exception:
                 input_file.close()
                 output_file.close()
                 raise ValueError('Bad key')
@@ -88,7 +88,7 @@ def main():
         else:
             try:
                 input_file = open(arguments['input_file'], 'r')
-            except:
+            except Exception:
                 raise ValueError('Problems with input_file')
 
         if arguments['output_file'] is None:
@@ -96,7 +96,7 @@ def main():
         else:
             try:
                 output_file = open(arguments['output_file'], 'w')
-            except:
+            except Exception:
                 input_file.close()
                 raise ValueError('Problems with output_file')
 
@@ -136,32 +136,32 @@ def main():
         else:
             try:
                 text_file = open(arguments['text_file'], 'r')
-            except:
+            except Exception:
                 raise ValueError('Problems with text_file')
 
         lowercase_letter = string.ascii_lowercase
         uppercase_letter = string.ascii_uppercase
 
-        model = {i: 0 for i in lowercase_letter}
+        model = [0 for i in lowercase_letter]
 
         for line in text_file:
             if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
                 break
             for i in line:
                 if i in lowercase_letter:
-                    model[i] += 1
+                    model[lowercase_letter.find(i)] += 1
                 elif i in uppercase_letter:
-                    model[lowercase_letter[uppercase_letter.find(i)]] += 1
+                    model[uppercase_letter.find(i)] += 1
 
         text_file.close()
 
         try:
             model_file = open(arguments['model_file'], 'w')
-        except:
+        except Exception:
             raise ValueError('Problems with model_file')
 
-        for i in lowercase_letter:
-            if i != 'z':
+        for i in range(len(lowercase_letter)):
+            if i != len(lowercase_letter) - 1:
                 model_file.write(str(model[i]) + ',')
             else:
                 model_file.write(str(model[i]) + '\n')
@@ -175,7 +175,7 @@ def main():
         else:
             try:
                 input_file = open(arguments['input_file'], 'r')
-            except:
+            except Exception:
                 raise ValueError('Problems with input_file')
 
         input_text = []
@@ -201,12 +201,12 @@ def main():
 
         try:
             model_file = open(arguments['model_file'], 'r')
-        except:
+        except Exception:
             raise ValueError('Problems with model_file')
 
         try:
             train_model = [int(i) for i in model_file.readline().split(',')]
-        except:
+        except Exception:
             raise TypeError('Wrong model_file')
 
         if len(train_model) != len(lowercase_letter):
@@ -232,7 +232,7 @@ def main():
                 model_of_hack = {i: 0 for i in lowercase_letter}
 
                 for i in range(first_element, len(string_input_text), len_of_key):
-                    model_of_hack[ string_input_text[i] ] += 1
+                    model_of_hack[string_input_text[i]] += 1
 
                 match_index_in_input = 0
                 count_of_letters_in_input = 0
@@ -261,7 +261,7 @@ def main():
         else:
             try:
                 output_file = open(arguments['output_file'], 'w')
-            except:
+            except Exception:
                 raise ValueError('Problems with output_file')
 
         key_index = 0
@@ -281,7 +281,7 @@ def main():
         else:
             try:
                 input_file = open(arguments['input_file'], 'r')
-            except:
+            except Exception:
                 raise ValueError('Problems with input_file')
 
         input_text = []
@@ -305,15 +305,14 @@ def main():
 
         string_input_text = ''.join(input_text)
 
-
         try:
             model_file = open(arguments['model_file'], 'r')
-        except:
+        except Exception:
             raise ValueError('Problems with model_file')
 
         try:
             train_model = [int(i) for i in model_file.readline().split(',')]
-        except:
+        except Exception:
             raise TypeError('Wrong model_file')
 
         if len(train_model) != len(lowercase_letter):
@@ -328,7 +327,7 @@ def main():
         else:
             try:
                 output_file = open(arguments['output_file'], 'w')
-            except:
+            except Exception:
                 raise ValueError('Problems with output_file')
 
         key_index = 0
@@ -343,8 +342,8 @@ def main():
 
     if arguments['type'] == 'train-short':
 
-        if arguments['N'] < 0:
-            raise ValueError('Incorrect N: N must be positive or zero')
+        if arguments['N'] <= 0:
+            raise ValueError('Incorrect N: N must be positive')
 
         if arguments['text_file'] is None:
             text_file = sys.stdin
@@ -352,13 +351,15 @@ def main():
         else:
             try:
                 text_file = open(arguments['text_file'], 'r')
-            except:
+            except Exception:
                 raise ValueError('Problems with text_file')
 
         lowercase_letter = string.ascii_lowercase
         uppercase_letter = string.ascii_uppercase
 
         short_model = cl.Counter()
+
+        model = [0 for i in lowercase_letter]
 
         for line in text_file:
             if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
@@ -368,8 +369,10 @@ def main():
                 for j in i:
                     if j in lowercase_letter:
                         new_i.append(j)
+                        model[lowercase_letter.find(j)] += 1
                     elif j in uppercase_letter:
                         new_i.append(lowercase_letter[uppercase_letter.find(j)])
+                        model[uppercase_letter.find(j)] += 1
                 if len(new_i):
                     new_i = ''.join(new_i)
                     short_model[new_i] += 1
@@ -378,16 +381,24 @@ def main():
 
         try:
             model_file = open(arguments['model_file'], 'w')
-        except:
+        except Exception:
             raise ValueError('Problems with model_file')
+
+        for i in range(len(lowercase_letter)):
+            if i != len(lowercase_letter) - 1:
+                model_file.write(str(model[i]) + ',')
+            else:
+                model_file.write(str(model[i]) + ';')
 
         for i, j in short_model.items():
             if j >= arguments['N']:
-                model_file.write(i + ',')
+                model_file.write(i + ':' + str(j) + ',')
 
         model_file.close()
+
+    if arguments['type'] == 'hack-short':
+        pass
 
 
 if __name__ == '__main__':
     main()
-

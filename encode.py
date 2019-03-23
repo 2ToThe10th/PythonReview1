@@ -1,5 +1,6 @@
 import string
 
+
 def encode_caesar(text, key, j):
     return encode_vigenere(text, string.ascii_lowercase[key], j)
 
@@ -28,4 +29,3 @@ def encode_vigenere(text, key, j):
             encoded_text.append(i)
 
     return tuple([''.join(encoded_text), j])
-
