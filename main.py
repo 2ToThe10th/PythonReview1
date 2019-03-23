@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
+
 import sys
 import parser
 import hack
 import encode
 import decode
 import string
+import collections as cl
 
 
 def main():
@@ -337,6 +340,52 @@ def main():
             output_file.flush()
 
         output_file.close()
+
+    if arguments['type'] == 'train-short':
+
+        if arguments['N'] < 0:
+            raise ValueError('Incorrect N: N must be positive or zero')
+
+        if arguments['text_file'] is None:
+            text_file = sys.stdin
+            print('Input from stdin.\nTo exit programme type "exit"')
+        else:
+            try:
+                text_file = open(arguments['text_file'], 'r')
+            except:
+                raise ValueError('Problems with text_file')
+
+        lowercase_letter = string.ascii_lowercase
+        uppercase_letter = string.ascii_uppercase
+
+        short_model = cl.Counter()
+
+        for line in text_file:
+            if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
+                break
+            for i in line.split(' '):
+                new_i = []
+                for j in i:
+                    if j in lowercase_letter:
+                        new_i.append(j)
+                    elif j in uppercase_letter:
+                        new_i.append(lowercase_letter[uppercase_letter.find(j)])
+                if len(new_i):
+                    new_i = ''.join(new_i)
+                    short_model[new_i] += 1
+
+        text_file.close()
+
+        try:
+            model_file = open(arguments['model_file'], 'w')
+        except:
+            raise ValueError('Problems with model_file')
+
+        for i, j in short_model.items():
+            if j >= arguments['N']:
+                model_file.write(i + ',')
+
+        model_file.close()
 
 
 if __name__ == '__main__':
