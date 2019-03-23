@@ -142,7 +142,7 @@ def main():
         lowercase_letter = string.ascii_lowercase
         uppercase_letter = string.ascii_uppercase
 
-        model = [0 for i in lowercase_letter]
+        model = [0] * len(lowercase_letter)
 
         for line in text_file:
             if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
@@ -246,13 +246,14 @@ def main():
 
                 all_match_index.append(match_index_in_input)
 
-            if all([(i > match_index_in_model*0.8) for i in all_match_index]):
+            if all([(i > match_index_in_model * 0.8) for i in all_match_index]):
                 break
 
         list_key = []
 
         for i in range(len_of_key):
-            list_key.append(lowercase_letter[hack.hack_caesar(string_input_text[i::len_of_key], train_model)])
+            list_key.append(lowercase_letter[hack.hack_caesar(
+                string_input_text[i::len_of_key], train_model)])
 
         key = ''.join(list_key)
 
@@ -359,7 +360,7 @@ def main():
 
         short_model = cl.Counter()
 
-        model = [0 for i in lowercase_letter]
+        model = [0] * len(lowercase_letter)
 
         for line in text_file:
             if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
@@ -397,7 +398,129 @@ def main():
         model_file.close()
 
     if arguments['type'] == 'hack-short':
-        pass
+
+        lowercase_letter = string.ascii_lowercase
+        uppercase_letter = string.ascii_uppercase
+
+        with open(arguments['model_file']) as model_file:
+
+            model_letter, model_words = model_file.readline().split(';')
+
+            number_of_letters = model_letter.split(',')
+
+            if len(number_of_letters) != len(lowercase_letter):
+                raise ValueError('Bad model file')
+
+            try:
+                number_of_letters = tuple(j[1] for j in
+                                          sorted([(int(number_of_letters[i]), lowercase_letter[i])
+                                                  for i in range(len(lowercase_letter))],
+                                                 reverse=True))
+            except Exception:
+                raise TypeError('Bad model file')
+
+            word = {}
+            try:
+                for i in model_words.split(','):
+                    if len(i):
+                        word_in_model, number_in_model = i.split(':')
+                        number_in_model = int(number_in_model)
+                        word[word_in_model] = number_in_model
+            except Exception:
+                raise ValueError('Bad model file')
+
+        if arguments['input_file'] is None:
+            text_file = sys.stdin
+            print('Input from stdin.\nTo exit programme type "exit"')
+        else:
+            try:
+                text_file = open(arguments['input_file'], 'r')
+            except Exception:
+                raise ValueError('Problems with text_file')
+
+        information_about_text = tuple([0.0] * len(lowercase_letter))
+        information_about_text = [list(information_about_text) for i in range(len(lowercase_letter))]
+
+        input_text = []
+
+        for line in text_file:
+            if arguments['input_file'] is None and (line == 'exit' or line == 'exit\n'):
+                break
+            input_text.append(line)
+            for word_in_line in line.split(' '):
+                new_i = []
+                for j in word_in_line:
+                    if j in lowercase_letter:
+                        new_i.append(j)
+                    elif j in uppercase_letter:
+                        new_i.append(lowercase_letter[uppercase_letter.find(j)])
+                if len(new_i):
+                    new_i = ''.join(new_i)
+                    plus_index = [((len(lowercase_letter)
+                                    + lowercase_letter.find(new_i[i + 1])
+                                    - lowercase_letter.find(new_i[i]))
+                                   % len(lowercase_letter)) for i in range(len(new_i) - 1)]
+
+                    possible_words = []
+                    counter = []
+
+                    for i in lowercase_letter:
+                        may_be_word = [i]
+                        j = lowercase_letter.find(i)
+                        for plus in plus_index:
+                            j += plus
+                            j %= len(lowercase_letter)
+                            may_be_word.append(lowercase_letter[j])
+                        may_be_word = ''.join(may_be_word)
+                        if word.get(may_be_word):
+                            possible_words.append((len(lowercase_letter)
+                                                   + lowercase_letter.find(new_i[0])
+                                                   - lowercase_letter.find(i))
+                                                  % len(lowercase_letter))
+                            counter.append(word[may_be_word])
+
+                    q = 0
+
+                    for i in possible_words:
+                        for j in new_i:
+                            information_about_text[lowercase_letter.find(j)][i] \
+                                += counter[q] / len(possible_words)
+                        q += 1
+
+        possible_key = [0] * len(lowercase_letter)
+
+        for i in range(len(number_of_letters)):
+            for j in range(len(lowercase_letter)):
+                possible_key[i] += information_about_text[j][i]
+
+        maxx_value = -1
+        maxx_index = -1
+
+        for i in range(len(possible_key)):
+            if possible_key[i] > maxx_value:
+                maxx_value = possible_key[i]
+                maxx_index = i
+
+        if arguments['output_file'] is None:
+            output_file = sys.stdout
+        else:
+            try:
+                output_file = open(arguments['output_file'], 'w')
+            except Exception:
+                input_file.close()
+                raise ValueError('Problems with output_file')
+
+
+        for line in input_text:
+            if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
+                break
+            decode.decode_caesar(line, maxx_index, 0)
+            output_file.write(decode.decode_caesar(line, maxx_index, 0)[0])
+            output_file.flush()
+
+        output_file.close()
+
+
 
 
 if __name__ == '__main__':

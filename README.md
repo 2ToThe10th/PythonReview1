@@ -15,4 +15,5 @@ main.py hack --cipher {caesar,vigenere} [--input-file INPUT_FILE]
 ## train-short
 main.py train-short [--text-file TEXT_FILE] --model-file MODEL_FILE -N N
 ## hack-short
-Not implemented yet (At the seminar it was said that bonuses can be added to 2 packages)
+main.py hack-short [--input-file INPUT_FILE] [--output-file OUTPUT_FILE]
+               --model-file MODEL_FILE
