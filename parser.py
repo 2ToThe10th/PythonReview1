@@ -1,6 +1,5 @@
 import sys
 import argparse
-from argparse import ArgumentParser
 
 
 def parse():
