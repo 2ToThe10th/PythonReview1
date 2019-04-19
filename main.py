@@ -366,17 +366,17 @@ def main():
             if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
                 break
             for i in line.split(' '):
-                new_i = []
+                normalize_word = []
                 for j in i:
                     if j in lowercase_letter:
-                        new_i.append(j)
+                        normalize_word.append(j)
                         model[lowercase_letter.find(j)] += 1
                     elif j in uppercase_letter:
-                        new_i.append(lowercase_letter[uppercase_letter.find(j)])
+                        normalize_word.append(lowercase_letter[uppercase_letter.find(j)])
                         model[uppercase_letter.find(j)] += 1
-                if len(new_i):
-                    new_i = ''.join(new_i)
-                    short_model[new_i] += 1
+                if len(normalize_word):
+                    normalize_word = ''.join(normalize_word)
+                    short_model[normalize_word] += 1
 
         text_file.close()
 
@@ -438,28 +438,27 @@ def main():
             except Exception:
                 raise ValueError('Problems with text_file')
 
-        information_about_text = tuple([0.0] * len(lowercase_letter))
-        information_about_text = [list(information_about_text) for i in range(len(lowercase_letter))]
-
         input_text = []
+
+        possible_key = [0] * len(lowercase_letter)
 
         for line in text_file:
             if arguments['input_file'] is None and (line == 'exit' or line == 'exit\n'):
                 break
             input_text.append(line)
             for word_in_line in line.split(' '):
-                new_i = []
+                normalize_word = []
                 for j in word_in_line:
                     if j in lowercase_letter:
-                        new_i.append(j)
+                        normalize_word.append(j)
                     elif j in uppercase_letter:
-                        new_i.append(lowercase_letter[uppercase_letter.find(j)])
-                if len(new_i):
-                    new_i = ''.join(new_i)
+                        normalize_word.append(lowercase_letter[uppercase_letter.find(j)])
+                if len(normalize_word):
+                    normalize_word = ''.join(normalize_word)
                     plus_index = [((len(lowercase_letter)
-                                    + lowercase_letter.find(new_i[i + 1])
-                                    - lowercase_letter.find(new_i[i]))
-                                   % len(lowercase_letter)) for i in range(len(new_i) - 1)]
+                                    + lowercase_letter.find(normalize_word[i + 1])
+                                    - lowercase_letter.find(normalize_word[i]))
+                                   % len(lowercase_letter)) for i in range(len(normalize_word) - 1)]
 
                     possible_words = []
                     counter = []
@@ -474,7 +473,7 @@ def main():
                         may_be_word = ''.join(may_be_word)
                         if word.get(may_be_word):
                             possible_words.append((len(lowercase_letter)
-                                                   + lowercase_letter.find(new_i[0])
+                                                   + lowercase_letter.find(normalize_word[0])
                                                    - lowercase_letter.find(i))
                                                   % len(lowercase_letter))
                             counter.append(word[may_be_word])
@@ -482,17 +481,8 @@ def main():
                     q = 0
 
                     for i in possible_words:
-                        for j in new_i:
-                            information_about_text[lowercase_letter.find(j)][i] \
-                                += counter[q] / len(possible_words)
+                        possible_key[i] += counter[q]
                         q += 1
-
-        possible_key = [0] * len(lowercase_letter)
-
-        for i in range(len(number_of_letters)):
-            for j in range(len(lowercase_letter)):
-                possible_key[i] += information_about_text[j][i]
-
         maxx_value = -1
         maxx_index = -1
 
@@ -510,17 +500,13 @@ def main():
                 input_file.close()
                 raise ValueError('Problems with output_file')
 
-
         for line in input_text:
             if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
                 break
-            decode.decode_caesar(line, maxx_index, 0)
             output_file.write(decode.decode_caesar(line, maxx_index, 0)[0])
             output_file.flush()
 
         output_file.close()
-
-
 
 
 if __name__ == '__main__':
