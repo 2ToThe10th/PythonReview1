@@ -2,11 +2,11 @@
 
 import sys
 import parser
+import string
+import collections as cl
 import hack
 import encode
 import decode
-import string
-import collections as cl
 
 
 def main():
@@ -63,7 +63,7 @@ def main():
 
         if arguments['type'] == 'encode':
             for line in input_file:
-                if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
+                if line in ['exit\n', 'exit'] and arguments['input_file'] is None:
                     break
                 return_value = encode_fun(line, key, key_index)
                 output_file.write(return_value[0])
@@ -71,7 +71,7 @@ def main():
                 output_file.flush()
         else:
             for line in input_file:
-                if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
+                if line in ['exit\n', 'exit'] and arguments['input_file'] is None:
                     break
                 return_value = decode_fun(line, key, key_index)
                 output_file.write(return_value[0])
@@ -109,7 +109,7 @@ def main():
         out_text = []
 
         for line in input_file:
-            if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
+            if line in ['exit\n', 'exit'] and arguments['input_file'] is None:
                 break
             for i in line:
 
@@ -145,7 +145,7 @@ def main():
         model = [0] * len(lowercase_letter)
 
         for line in text_file:
-            if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
+            if arguments['text_file'] is None and line in ['exit\n', 'exit']:
                 break
             for i in line:
                 if i in lowercase_letter:
@@ -186,7 +186,7 @@ def main():
         full_input_text = []
 
         for line in input_file:
-            if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
+            if line in ['exit\n', 'exit'] and arguments['input_file'] is None:
                 break
             full_input_text.append(line)
             for i in line:
@@ -293,7 +293,7 @@ def main():
         full_input_text = []
 
         for line in input_file:
-            if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
+            if line in ['exit\n', 'exit'] and arguments['input_file'] is None:
                 break
             full_input_text.append(line)
             for i in line:
@@ -363,7 +363,7 @@ def main():
         model = [0] * len(lowercase_letter)
 
         for line in text_file:
-            if arguments['text_file'] is None and (line == 'exit' or line == 'exit\n'):
+            if arguments['text_file'] is None and line in ['exit\n', 'exit']:
                 break
             for i in line.split(' '):
                 normalize_word = []
@@ -374,7 +374,7 @@ def main():
                     elif j in uppercase_letter:
                         normalize_word.append(lowercase_letter[uppercase_letter.find(j)])
                         model[uppercase_letter.find(j)] += 1
-                if len(normalize_word):
+                if normalize_word:
                     normalize_word = ''.join(normalize_word)
                     short_model[normalize_word] += 1
 
@@ -422,7 +422,7 @@ def main():
             word = {}
             try:
                 for i in model_words.split(','):
-                    if len(i):
+                    if i:
                         word_in_model, number_in_model = i.split(':')
                         number_in_model = int(number_in_model)
                         word[word_in_model] = number_in_model
@@ -443,7 +443,7 @@ def main():
         possible_key = [0] * len(lowercase_letter)
 
         for line in text_file:
-            if arguments['input_file'] is None and (line == 'exit' or line == 'exit\n'):
+            if arguments['input_file'] is None and line in ['exit\n', 'exit']:
                 break
             input_text.append(line)
             for word_in_line in line.split(' '):
@@ -453,7 +453,7 @@ def main():
                         normalize_word.append(j)
                     elif j in uppercase_letter:
                         normalize_word.append(lowercase_letter[uppercase_letter.find(j)])
-                if len(normalize_word):
+                if normalize_word:
                     normalize_word = ''.join(normalize_word)
                     plus_index = [((len(lowercase_letter)
                                     + lowercase_letter.find(normalize_word[i + 1])
@@ -478,18 +478,21 @@ def main():
                                                   % len(lowercase_letter))
                             counter.append(word[may_be_word])
 
-                    q = 0
+                    index = 0
 
                     for i in possible_words:
-                        possible_key[i] += counter[q]
-                        q += 1
+                        possible_key[i] += counter[index]
+                        index += 1
         maxx_value = -1
         maxx_index = -1
 
-        for i in range(len(possible_key)):
-            if possible_key[i] > maxx_value:
-                maxx_value = possible_key[i]
-                maxx_index = i
+        index = 0
+
+        for i in possible_key:
+            if i > maxx_value:
+                maxx_value = i
+                maxx_index = index
+            index += 1
 
         if arguments['output_file'] is None:
             output_file = sys.stdout
@@ -501,7 +504,7 @@ def main():
                 raise ValueError('Problems with output_file')
 
         for line in input_text:
-            if (line == 'exit\n' or line == 'exit') and arguments['input_file'] is None:
+            if line in ['exit\n', 'exit'] and arguments['input_file'] is None:
                 break
             output_file.write(decode.decode_caesar(line, maxx_index, 0)[0])
             output_file.flush()

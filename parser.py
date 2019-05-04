@@ -14,34 +14,34 @@ def parse():
 
     type_of_cipher = ('caesar', 'vigenere', 'vernam')
 
-    if 'encode' == sys.argv[1]:
+    if sys.argv[1] == 'encode':
         parser.add_argument('--cipher', action='store', type=str, required=True, choices=type_of_cipher)
         parser.add_argument('--key', action='store', type=str, required=True)
         parser.add_argument('--input-file', action='store', type=str)
         parser.add_argument('--output-file', action='store', type=str)
 
-    elif 'decode' == sys.argv[1]:
+    elif sys.argv[1] == 'decode':
         parser.add_argument('--cipher', action='store', type=str, required=True, choices=type_of_cipher)
         parser.add_argument('--key', action='store', type=str, required=True)
         parser.add_argument('--input-file', action='store', type=str)
         parser.add_argument('--output-file', action='store', type=str)
 
-    elif 'train' == sys.argv[1]:
+    elif sys.argv[1] == 'train':
         parser.add_argument('--text-file', action='store', type=str)
         parser.add_argument('--model-file', action='store', type=str, required=True)
 
-    elif 'hack' == sys.argv[1]:
+    elif sys.argv[1] == 'hack':
         parser.add_argument('--cipher', action='store', type=str, required=True, choices=type_of_cipher[:2])
         parser.add_argument('--input-file', action='store', type=str)
         parser.add_argument('--output-file', action='store', type=str)
         parser.add_argument('--model-file', action='store', type=str, required=True)
 
-    elif 'train-short' == sys.argv[1]:
+    elif sys.argv[1] == 'train-short':
         parser.add_argument('--text-file', action='store', type=str)
         parser.add_argument('--model-file', action='store', type=str, required=True)
         parser.add_argument('-N', action='store', type=int, required=True)
 
-    elif 'hack-short' == sys.argv[1]:
+    elif sys.argv[1] == 'hack-short':
         parser.add_argument('--input-file', action='store', type=str)
         parser.add_argument('--output-file', action='store', type=str)
         parser.add_argument('--model-file', action='store', type=str, required=True)
