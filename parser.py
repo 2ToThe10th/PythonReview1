@@ -1,53 +1,57 @@
-import sys
 import argparse
+import encode_decode
+import hack
+import train
+import train_short
+import hack_short
 
 
 def parse():
-    parser = argparse.ArgumentParser(description="encoder")
-
-    type_of_action = ['encode', 'decode', 'train', 'hack', 'train-short', 'hack-short']
-
-    parser.add_argument('type', action='store', type=str, choices=type_of_action)
-
-    if len(sys.argv) == 1:
-        raise ValueError('argument "type" is required')
-
     type_of_cipher = ('caesar', 'vigenere', 'vernam')
 
-    if sys.argv[1] == 'encode':
-        parser.add_argument('--cipher', action='store', type=str, required=True, choices=type_of_cipher)
-        parser.add_argument('--key', action='store', type=str, required=True)
-        parser.add_argument('--input-file', action='store', type=str)
-        parser.add_argument('--output-file', action='store', type=str)
+    parser = argparse.ArgumentParser(description="cipher utility")
+    subparsers = parser.add_subparsers()
 
-    elif sys.argv[1] == 'decode':
-        parser.add_argument('--cipher', action='store', type=str, required=True, choices=type_of_cipher)
-        parser.add_argument('--key', action='store', type=str, required=True)
-        parser.add_argument('--input-file', action='store', type=str)
-        parser.add_argument('--output-file', action='store', type=str)
+    encode_parser = subparsers.add_parser('encode', help='encode your text')
+    encode_parser.add_argument('--cipher', required=True, choices=type_of_cipher, help='choose type of cipher')
+    encode_parser.add_argument('--key', required=True, help='key for cipher')
+    encode_parser.add_argument('--input-file', help='input file')
+    encode_parser.add_argument('--output-file', help='output file')
+    encode_parser.set_defaults(func=encode_decode.encode_decode)
+    encode_parser.set_defaults(type='encode')
 
-    elif sys.argv[1] == 'train':
-        parser.add_argument('--text-file', action='store', type=str)
-        parser.add_argument('--model-file', action='store', type=str, required=True)
+    decode_parser = subparsers.add_parser('decode', help='decode your text')
+    decode_parser.add_argument('--cipher', required=True, choices=type_of_cipher, help='choose type of cipher')
+    decode_parser.add_argument('--key', required=True, help='key for cipher')
+    decode_parser.add_argument('--input-file', help='input file')
+    decode_parser.add_argument('--output-file', help='output file')
+    decode_parser.set_defaults(func=encode_decode.encode_decode)
+    decode_parser.set_defaults(type='decode')
 
-    elif sys.argv[1] == 'hack':
-        parser.add_argument('--cipher', action='store', type=str, required=True, choices=type_of_cipher[:2])
-        parser.add_argument('--input-file', action='store', type=str)
-        parser.add_argument('--output-file', action='store', type=str)
-        parser.add_argument('--model-file', action='store', type=str, required=True)
+    train_parser = subparsers.add_parser('train', help='train system to hack')
+    train_parser.add_argument('--text-file', help='input text file')
+    train_parser.add_argument('--model-file', required=True)
+    train_parser.set_defaults(func=train.train)
 
-    elif sys.argv[1] == 'train-short':
-        parser.add_argument('--text-file', action='store', type=str)
-        parser.add_argument('--model-file', action='store', type=str, required=True)
-        parser.add_argument('-N', action='store', type=int, required=True)
+    hack_parser = subparsers.add_parser('hack', help='decode text without key')
+    hack_parser.add_argument('--cipher', default='vigenere', choices=type_of_cipher[:2], help='choose type of cipher')
+    hack_parser.add_argument('--input-file', help='input file')
+    hack_parser.add_argument('--output-file', help='output file')
+    hack_parser.add_argument('--model-file', required=True)
+    hack_parser.set_defaults(func=hack.hack)
 
-    elif sys.argv[1] == 'hack-short':
-        parser.add_argument('--input-file', action='store', type=str)
-        parser.add_argument('--output-file', action='store', type=str)
-        parser.add_argument('--model-file', action='store', type=str, required=True)
+    train_short_parser = subparsers.add_parser('train-short',
+                                               help='this train function better work with small text, because remember words from model text')
+    train_short_parser.add_argument('--text-file', help='input text file')
+    train_short_parser.add_argument('--model-file', required=True)
+    train_short_parser.add_argument('-N', action='store', type=int, required=True)
+    train_short_parser.set_defaults(func=train_short.train_short)
 
-    else:
-        raise ValueError("argument type: invalid choice: '" + str(sys.argv[1]) +
-                         "' (choose from " + str(type_of_action) + ")")
+    hack_short_parser = subparsers.add_parser('hack-short',
+                                              help='this hack function work with model-file made by train-short function')
+    hack_short_parser.add_argument('--input-file', help='input file')
+    hack_short_parser.add_argument('--output-file', help='output file')
+    hack_short_parser.add_argument('--model-file', required=True)
+    hack_short_parser.set_defaults(func=hack_short.hack_short)
 
     return vars(parser.parse_args())
