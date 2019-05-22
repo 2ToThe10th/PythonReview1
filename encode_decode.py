@@ -7,7 +7,7 @@ import string
 def encode_decode(arguments):
     if arguments['cipher'] in ('caesar', 'vigenere'):
         encode_decode_caesar_vigenere(arguments)
-    else: # arguments['cipher'] == 'vernam'
+    else:  # arguments['cipher'] == 'vernam'
         encode_decode_vernam(arguments)
 
 

@@ -2,6 +2,8 @@ import sys
 import string
 import decode
 
+ALLOWABLE_ERROR = 0.2
+
 
 def hack_caesar(text, model):
     lowercase_letter = string.ascii_lowercase
@@ -47,11 +49,11 @@ def vigenere_hack(arguments):
 
         for line in input_file:
             full_input_text.append(line)
-            for i in line:
-                if i in lowercase_letter:
-                    input_text.append(i)
-                elif i in uppercase_letter:
-                    input_text.append(lowercase_letter[uppercase_letter.find(i)])
+            for symbol in line:
+                if symbol.islower():
+                    input_text.append(symbol)
+                elif symbol.isupper():
+                    input_text.append(symbol.lower())
 
     string_input_text = ''.join(input_text)
 
@@ -97,7 +99,7 @@ def vigenere_hack(arguments):
 
             all_match_index.append(match_index_in_input)
 
-        if all([(i > match_index_in_model * 0.8) for i in all_match_index]):
+        if all(((i > match_index_in_model * (1 - ALLOWABLE_ERROR)) for i in all_match_index)):
             break
 
     list_key = []
