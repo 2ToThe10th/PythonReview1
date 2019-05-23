@@ -19,8 +19,8 @@ def encode_decode_caesar_vigenere(arguments):
             if arguments['cipher'] == 'vigenere':
                 key = arguments['key'].lower()
 
-                for i in key:
-                    if i not in string.ascii_lowercase:
+                for symbol in key:
+                    if symbol not in string.ascii_lowercase:
                         raise ValueError('Bad key')
 
                 encode_fun = encode.encode_vigenere
@@ -66,14 +66,14 @@ def encode_decode_vernam(arguments):
             out_text = []
 
             for line in input_file:
-                for i in line:
+                for symbol in line:
 
-                    if i not in code_string:
-                        out_text.append(i)
+                    if symbol not in code_string:
+                        out_text.append(symbol)
                     else:
                         if code_index >= len(key):
                             raise ValueError('Too small key')
-                        out_text.append(code_string[(code_string.find(i) ^ code_string.find(key[code_index]))])
+                        out_text.append(code_string[(code_string.find(symbol) ^ code_string.find(key[code_index]))])
                         code_index += 1
 
             output_file.write(''.join(out_text))

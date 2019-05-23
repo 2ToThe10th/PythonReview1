@@ -8,7 +8,7 @@ ALLOWABLE_ERROR = 0.2
 def hack_caesar(text, model):
     lowercase_letter = string.ascii_lowercase
 
-    counter = {i: 0 for i in lowercase_letter}
+    counter = {index: 0 for index in lowercase_letter}
 
     for letter in text:
         counter[letter] += 1
@@ -43,7 +43,6 @@ def vigenere_hack(arguments):
         input_text = []
 
         lowercase_letter = string.ascii_lowercase
-        uppercase_letter = string.ascii_uppercase
 
         full_input_text = []
 
@@ -60,7 +59,7 @@ def vigenere_hack(arguments):
     with open(arguments['model_file'], 'r') as model_file:
 
         try:
-            train_model = [int(i) for i in model_file.readline().split(',')]
+            train_model = [int(count_of_letters_in_model) for count_of_letters_in_model in model_file.readline().split(',')]
         except Exception:
             raise TypeError('Wrong model_file')
 
@@ -70,9 +69,9 @@ def vigenere_hack(arguments):
     match_index_in_model = 0
     count_of_letters_in_model = 0
 
-    for i in train_model:
-        match_index_in_model += max(0, i * (i - 1))
-        count_of_letters_in_model += i
+    for count_of_letter_in_train_file in train_model:
+        match_index_in_model += max(0, count_of_letter_in_train_file * (count_of_letter_in_train_file - 1))
+        count_of_letters_in_model += count_of_letter_in_train_file
 
     match_index_in_model /= max(1, count_of_letters_in_model * (count_of_letters_in_model - 1))
 
@@ -82,31 +81,31 @@ def vigenere_hack(arguments):
         all_match_index = []
 
         for first_element in range(len_of_key):
-            model_of_hack = {i: 0 for i in lowercase_letter}
+            model_of_hack = {index: 0 for index in lowercase_letter}
 
-            for i in range(first_element, len(string_input_text), len_of_key):
-                model_of_hack[string_input_text[i]] += 1
+            for index in range(first_element, len(string_input_text), len_of_key):
+                model_of_hack[string_input_text[index]] += 1
 
             match_index_in_input = 0
             count_of_letters_in_input = 0
 
-            for i in model_of_hack.values():
-                match_index_in_input += max(0, i * (i - 1))
-                count_of_letters_in_input += i
+            for count_of_letter_in_input_file in model_of_hack.values():
+                match_index_in_input += max(0, count_of_letter_in_input_file * (count_of_letter_in_input_file - 1))
+                count_of_letters_in_input += count_of_letter_in_input_file
 
             match_index_in_input /= max(1, count_of_letters_in_input
                                         * (count_of_letters_in_input - 1))
 
             all_match_index.append(match_index_in_input)
 
-        if all(((i > match_index_in_model * (1 - ALLOWABLE_ERROR)) for i in all_match_index)):
+        if all(symbol_index > match_index_in_model * (1 - ALLOWABLE_ERROR) for symbol_index in all_match_index):
             break
 
     list_key = []
 
-    for i in range(len_of_key):
+    for first_element in range(len_of_key):
         list_key.append(lowercase_letter[hack_caesar(
-            string_input_text[i::len_of_key], train_model)])
+            string_input_text[first_element::len_of_key], train_model)])
 
     key = ''.join(list_key)
 
@@ -133,18 +132,18 @@ def caesar_hack(arguments):
 
         for line in input_file:
             full_input_text.append(line)
-            for i in line:
-                if i in lowercase_letter:
-                    input_text.append(i)
-                elif i in uppercase_letter:
-                    input_text.append(lowercase_letter[uppercase_letter.find(i)])
+            for symbol in line:
+                if symbol in lowercase_letter:
+                    input_text.append(symbol)
+                elif symbol in uppercase_letter:
+                    input_text.append(lowercase_letter[uppercase_letter.find(symbol)])
 
     string_input_text = ''.join(input_text)
 
     with open(arguments['model_file'], 'r') as model_file:
 
         try:
-            train_model = [int(i) for i in model_file.readline().split(',')]
+            train_model = [int(count_of_letters_in_model) for count_of_letters_in_model in model_file.readline().split(',')]
         except Exception:
             raise TypeError('Wrong model_file')
 

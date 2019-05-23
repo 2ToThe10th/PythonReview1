@@ -15,19 +15,19 @@ def train_short(arguments):
         short_model = cl.Counter()
 
         for line in text_file:
-            for i in line.split(' '):
+            for word in line.split(' '):
                 normalize_word = []
-                for j in i:
-                    if j in lowercase_letter:
-                        normalize_word.append(j)
-                    elif j in uppercase_letter:
-                        normalize_word.append(lowercase_letter[uppercase_letter.find(j)])
+                for symbol in word:
+                    if symbol in lowercase_letter:
+                        normalize_word.append(symbol)
+                    elif symbol in uppercase_letter:
+                        normalize_word.append(lowercase_letter[uppercase_letter.find(symbol)])
                 if normalize_word:
                     normalize_word = ''.join(normalize_word)
                     short_model[normalize_word] += 1
 
     with sys.stdin if arguments['model_file'] is None else open(arguments['model_file'], 'r') as model_file:
 
-        for i, j in short_model.items():
-            if j >= arguments['N']:
-                model_file.write(i + ':' + str(j) + ',')
+        for word, number_of_word in short_model.items():
+            if number_of_word >= arguments['N']:
+                model_file.write(word + ':' + str(number_of_word) + ',')

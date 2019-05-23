@@ -13,9 +13,9 @@ def hack_short(arguments):
 
         word = {}
         try:
-            for i in model_words.split(','):
-                if i:
-                    word_in_model, number_in_model = i.split(':')
+            for words_number in model_words.split(','):
+                if words_number:
+                    word_in_model, number_in_model = words_number.split(':')
                     number_in_model = int(number_in_model)
                     word[word_in_model] = number_in_model
         except Exception:
@@ -31,49 +31,49 @@ def hack_short(arguments):
             input_text.append(line)
             for word_in_line in line.split(' '):
                 normalize_word = []
-                for j in word_in_line:
-                    if j in lowercase_letter:
-                        normalize_word.append(j)
-                    elif j in uppercase_letter:
-                        normalize_word.append(lowercase_letter[uppercase_letter.find(j)])
+                for symbol in word_in_line:
+                    if symbol in lowercase_letter:
+                        normalize_word.append(symbol)
+                    elif symbol in uppercase_letter:
+                        normalize_word.append(lowercase_letter[uppercase_letter.find(symbol)])
                 if normalize_word:
                     normalize_word = ''.join(normalize_word)
                     plus_index = [((len(lowercase_letter)
-                                    + lowercase_letter.find(normalize_word[i + 1])
-                                    - lowercase_letter.find(normalize_word[i]))
-                                   % len(lowercase_letter)) for i in range(len(normalize_word) - 1)]
+                                    + lowercase_letter.find(normalize_word[index + 1])
+                                    - lowercase_letter.find(normalize_word[index]))
+                                   % len(lowercase_letter)) for index in range(len(normalize_word) - 1)]
 
                     possible_words = []
                     counter = []
 
-                    for i in lowercase_letter:
-                        may_be_word = [i]
-                        j = lowercase_letter.find(i)
+                    for letter in lowercase_letter:
+                        may_be_word = [letter]
+                        letter_index = lowercase_letter.find(letter)
                         for plus in plus_index:
-                            j += plus
-                            j %= len(lowercase_letter)
+                            letter_index += plus
+                            letter_index %= len(lowercase_letter)
                             may_be_word.append(lowercase_letter[j])
                         may_be_word = ''.join(may_be_word)
                         if word.get(may_be_word):
                             possible_words.append((len(lowercase_letter)
                                                    + lowercase_letter.find(normalize_word[0])
-                                                   - lowercase_letter.find(i))
+                                                   - lowercase_letter.find(letter))
                                                   % len(lowercase_letter))
                             counter.append(word[may_be_word])
 
                     index = 0
 
-                    for i in possible_words:
-                        possible_key[i] += counter[index]
+                    for word in possible_words:
+                        possible_key[word] += counter[index]
                         index += 1
         maxx_value = -1
         maxx_index = -1
 
         index = 0
 
-        for i in possible_key:
-            if i > maxx_value:
-                maxx_value = i
+        for key in possible_key:
+            if key > maxx_value:
+                maxx_value = key
                 maxx_index = index
             index += 1
 

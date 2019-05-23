@@ -12,16 +12,16 @@ def train(arguments):
         model = [0] * len(lowercase_letter)
 
         for line in text_file:
-            for i in line:
-                if i in lowercase_letter:
-                    model[lowercase_letter.find(i)] += 1
-                elif i in uppercase_letter:
-                    model[uppercase_letter.find(i)] += 1
+            for symbol in line:
+                if symbol in lowercase_letter:
+                    model[lowercase_letter.find(symbol)] += 1
+                elif symbol in uppercase_letter:
+                    model[uppercase_letter.find(symbol)] += 1
 
     with open(arguments['model_file'], 'w') as model_file:
 
-        for i in range(len(lowercase_letter)):
-            if i != len(lowercase_letter) - 1:
-                model_file.write(str(model[i]) + ',')
+        for letter_index in range(len(lowercase_letter)):
+            if letter_index != len(lowercase_letter) - 1:
+                model_file.write(str(model[letter_index]) + ',')
             else:
-                model_file.write(str(model[i]) + '\n')
+                model_file.write(str(model[letter_index]) + '\n')
